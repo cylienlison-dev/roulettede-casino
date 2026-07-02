@@ -1,21 +1,60 @@
-#casino-section {
-    background: #1a4d1a; /* Vert tapis de casino */
-    border: 5px solid #d4af37; /* Bordure dorée */
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 10px;
-    color: white;
-}
+/* Styles spécifiques pour les éléments graphiques complexes */
 
-#roulette-table {
+/* Effet visuel réaliste pour les jetons de casino */
+.chip-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 11px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    border: 3px dashed rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.2s;
+}
+.chip-btn:active {
+    transform: scale(0.9);
+}
+.chip-btn.selected {
+    transform: scale(1.1) translateY(-4px);
+    filter: brightness(1.2);
+    border-color: #fff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
 }
 
-/* Optimisation mobile */
-@media (max-width: 600px) {
-    #game-container { width: 95%; }
-    input { width: 80%; padding: 10px; }
+/* Génération graphique de la roue de roulette en CSS pur */
+#casino-wheel {
+    background: conic-gradient(
+        #34d399 0deg 9.7deg,    /* 0 - Vert */
+        #171717 9.7deg 19.4deg, #ef4444 19.4deg 29.1deg, #171717 29.1deg 38.8deg, #ef4444 38.8deg 48.5deg,
+        #171717 48.5deg 58.2deg, #ef4444 58.2deg 68deg, #171717 68deg 77.7deg, #ef4444 77.7deg 87.4deg,
+        #171717 87.4deg 97.1deg, #ef4444 97.1deg 106.8deg, #171717 106.8deg 116.5deg, #ef4444 116.5deg 126.2deg,
+        #171717 126.2deg 135.9deg, #ef4444 135.9deg 145.6deg, #171717 145.6deg 155.3deg, #ef4444 155.3deg 165deg,
+        #171717 165deg 174.7deg, #ef4444 174.7deg 184.4deg, #171717 184.4deg 194.1deg, #ef4444 194.1deg 203.8deg,
+        #171717 203.8deg 213.5deg, #ef4444 213.5deg 223.2deg, #171717 223.2deg 232.9deg, #ef4444 232.9deg 242.6deg,
+        #171717 242.6deg 252.3deg, #ef4444 252.3deg 262deg, #171717 262deg 271.7deg, #ef4444 271.7deg 281.4deg,
+        #171717 281.4deg 291.1deg, #ef4444 291.1deg 300.8deg, #171717 300.8deg 310.5deg, #ef4444 310.5deg 320.2deg,
+        #171717 320.2deg 330deg, #ef4444 330deg 339.7deg, #171717 339.7deg 349.4deg, #ef4444 349.4deg 360deg
+    );
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1); /* Décélération ultra-réaliste */
+}
+
+/* Centre de la roue en métal doré */
+#casino-wheel::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, #fbbf24 0%, #b45309 100%);
+    border-radius: 50%;
+    border: 2px solid #78350f;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }

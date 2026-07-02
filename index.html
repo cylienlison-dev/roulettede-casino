@@ -3,100 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mine Royale - Édition Premium</title>
-    <!-- Framework Tailwind CSS pour un rendu graphique moderne et épuré -->
+    <title>Roulette Royale</title>
+    <!-- Tailwind CSS pour le design responsive premium -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bibliothèque FontAwesome pour l'affichage des icônes de l'interface -->
+    <!-- FontAwesome pour les icônes de casino -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="h-full font-sans antialiased selection:bg-amber-500 selection:text-black">
+<body class="h-full font-sans antialiased selection:bg-amber-500 selection:text-black flex items-center justify-center p-4 sm:p-6">
 
-    <!-- CONTENEUR PRINCIPAL APPLICATIF (Optimisé PC et Mobile) -->
-    <div class="flex flex-col h-full max-w-md mx-auto bg-neutral-900 shadow-2xl overflow-hidden border-x border-neutral-800">
+    <!-- CONTENEUR PRINCIPAL RESPONSIVE (S'adapte sur PC et Mobile) -->
+    <div class="w-full max-w-5xl bg-neutral-900 shadow-2xl rounded-3xl overflow-hidden border border-neutral-800 flex flex-col">
         
-        <!-- EN-TÊTE / PANNEAU DES SCORES GLOBAL -->
+        <!-- BARRE DE SCORE / EN-TÊTE -->
         <header class="p-6 bg-neutral-950 border-b border-neutral-800 flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black tracking-wider text-amber-500 uppercase">Mine Royale</h1>
-                <p class="text-xs text-neutral-400">Version 2.0 • Production</p>
+                <h1 class="text-xl sm:text-2xl font-black tracking-wider text-amber-500 uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-dice-three text-red-500 animate-pulse"></i> Roulette Royale
+                </h1>
+                <p class="text-xs text-neutral-400">Édition Premium de Salon</p>
             </div>
+            <!-- Ton solde de jetons -->
             <div class="text-right">
+                <p class="text-[10px] uppercase tracking-widest text-neutral-400 mb-0.5">Votre Solde</p>
                 <div class="text-2xl font-mono font-bold text-white flex items-center justify-end gap-2">
-                    <i class="fa-solid fa-cube text-neutral-400"></i>
-                    <span id="global-coal">0</span>
+                    <i class="fa-solid fa-coins text-amber-500"></i>
+                    <span id="global-balance">1000</span>
                 </div>
-                <p class="text-xs text-emerald-400 font-medium">+<span id="global-cps">0</span>/s</p>
             </div>
         </header>
 
-        <!-- ZONE DE JEU (Défilante pour les petits écrans) -->
-        <main class="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
+        <!-- ZONE DE JEU : Grille adaptative (1 colonne sur Mobile, 2 colonnes sur PC) -->
+        <main class="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             
-            <!-- SECTION ACTION : CLIC PRINCIPAL -->
-            <section id="mine-pane" class="space-y-4">
-                <button id="main-click-btn" class="w-full aspect-[2/1] bg-gradient-to-br from-neutral-800 to-neutral-900 border border-neutral-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all duration-100 active:scale-95 shadow-lg group">
-                    <div class="w-16 h-16 rounded-full bg-neutral-950 flex items-center justify-center border border-neutral-800 group-hover:border-amber-500/50 transition-colors">
-                        <i class="fa-solid fa-pickaxe text-2xl text-amber-500 group-hover:rotate-12 transition-transform"></i>
+            <!-- COLONNE GAUCHE : La Roue du Casino -->
+            <div class="flex flex-col items-center justify-center space-y-4 py-4 bg-neutral-950/30 rounded-2xl border border-neutral-800/50 p-6">
+                <div class="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
+                    <!-- Repère visuel pour le numéro gagnant -->
+                    <div id="wheel-pointer" class="absolute -top-2 left-1/2 -translate-x-1/2 z-10 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[18px] border-t-amber-500 filter drop-shadow-lg"></div>
+                    <!-- Le disque de la roulette -->
+                    <div id="casino-wheel" class="w-full h-full rounded-full border-8 border-amber-600 shadow-2xl relative overflow-hidden bg-neutral-950 transition-transform duration-[4000s] ease-out flex items-center justify-center" style="transform: rotate(0deg);">
+                        <!-- Centre de la roue stylisé -->
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-neutral-800 to-neutral-900 border-4 border-amber-600 z-10 shadow-inner flex items-center justify-center">
+                            <div class="w-4 h-4 rounded-full bg-white shadow shadow-white animate-ping opacity-25"></div>
+                        </div>
+                        <!-- Les crans de la roulette en arrière-plan -->
+                        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_transparent_40%,_#000_100%)]"></div>
                     </div>
-                    <span class="text-sm font-bold uppercase tracking-widest text-neutral-300 group-hover:text-white">Extraire du charbon</span>
-                </button>
-            </section>
-
-            <!-- SECTION CASINO : ROULETTE ROYALE -->
-            <section class="bg-neutral-950/50 border border-neutral-800 rounded-2xl p-4 space-y-4">
-                <div class="flex justify-between items-center border-b border-neutral-800 pb-2">
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-400">
-                        <i class="fa-solid fa-circle-dashed text-red-500 mr-2"></i>Roulette Royale
-                    </h2>
-                    <span id="roulette-status" class="text-xs text-neutral-500 font-mono">Prêt</span>
                 </div>
-
-                <!-- Composant visuel de la Roue -->
-                <div class="relative w-44 h-44 mx-auto flex items-center justify-center">
-                    <div id="wheel-pointer" class="absolute -top-1 left-1/2 -translate-x-1/2 z-10 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[15px] border-t-amber-500 filter drop-shadow"></div>
-                    <div id="casino-wheel" class="w-full h-full rounded-full border-4 border-amber-600 shadow-2xl relative overflow-hidden bg-neutral-900"></div>
+                <div id="roulette-status" class="px-6 py-2 bg-neutral-950 border border-neutral-800 rounded-full text-sm font-mono font-bold text-neutral-400 tracking-wide">
+                    En attente de vos mises...
                 </div>
+            </div>
 
-                <!-- Interface de configuration des mises -->
-                <div class="space-y-3">
-                    <div class="grid grid-cols-2 gap-2">
+            <!-- COLONNE DROITE : Panneau des contrôles et des mises -->
+            <div class="space-y-6">
+                <div class="bg-neutral-950/60 border border-neutral-800 rounded-2xl p-6 space-y-5">
+                    
+                    <!-- Formulaire Numéro & Montant de mise -->
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-neutral-500 mb-1">Numéro (0-36)</label>
-                            <input type="number" id="bet-target" min="0" max="36" value="7" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm font-mono font-bold text-center focus:outline-none focus:border-amber-500 text-white">
+                            <label class="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-2">Numéro (0-36)</label>
+                            <input type="number" id="bet-target" min="0" max="36" value="7" class="w-full bg-neutral-900 border-2 border-neutral-800 rounded-xl px-3 py-3 text-lg font-mono font-black text-center focus:outline-none focus:border-amber-500 text-white transition-colors">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-neutral-500 mb-1">Mise Actuelle</label>
-                            <div class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm font-mono font-bold text-center text-amber-500" id="display-bet-amount">0</div>
+                            <label class="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-2">Mise sur la table</label>
+                            <div class="w-full bg-neutral-900 border-2 border-neutral-800 rounded-xl px-3 py-3 text-lg font-mono font-black text-center text-amber-500 flex items-center justify-center gap-1">
+                                <span id="display-bet-amount">0</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Sélecteur de Jetons -->
-                    <div class="flex justify-center gap-2 pt-1" id="chips-container">
-                        <button class="chip-btn bg-blue-600 text-white" data-amount="10">10</button>
-                        <button class="chip-btn bg-green-600 text-white" data-amount="100">100</button>
-                        <button class="chip-btn bg-purple-600 text-white" data-amount="1000">1K</button>
-                        <button class="chip-btn bg-red-600 text-white" data-amount="1000000">1M</button>
-                        <button id="clear-bet-btn" class="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-xs text-neutral-400 active:scale-90 hover:text-white transition-colors">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                    <!-- Le Tapis de Jetons -->
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-2.5 text-center">Sélectionnez vos jetons</label>
+                        <div class="flex justify-center gap-3" id="chips-container">
+                            <button class="chip-btn w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-black text-xs border-2 border-dashed border-white/50 shadow-lg transition-transform active:scale-90" data-amount="10">10</button>
+                            <button class="chip-btn w-12 h-12 rounded-full bg-green-600 hover:bg-green-500 text-white font-black text-xs border-2 border-dashed border-white/50 shadow-lg transition-transform active:scale-90" data-amount="50">50</button>
+                            <button class="chip-btn w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-black text-xs border-2 border-dashed border-white/50 shadow-lg transition-transform active:scale-90" data-amount="100">100</button>
+                            <button class="chip-btn w-12 h-12 rounded-full bg-red-600 hover:bg-red-500 text-white font-black text-xs border-2 border-dashed border-white/50 shadow-lg transition-transform active:scale-90" data-amount="500">500</button>
+                            <button id="clear-bet-btn" class="w-12 h-12 rounded-full border-2 border-neutral-700 hover:border-red-500 bg-neutral-900 flex items-center justify-center text-neutral-400 hover:text-red-500 transition-colors active:scale-90 shadow-lg" title="Effacer la mise">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <button id="spin-btn" class="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-neutral-950 font-black text-sm uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/10">
-                        Lancer la roue
+                    <!-- Bouton d'action principal -->
+                    <button id="spin-btn" class="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-neutral-950 font-black text-base uppercase tracking-widest py-4 rounded-xl transition-all shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate"></i> Lancer la roue
                     </button>
                 </div>
-            </section>
-
-            <!-- SECTION UPGRADES / BOUTIQUE D'INFRASTRUCTURES -->
-            <section class="space-y-3">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-800 pb-2">
-                    <i class="fa-solid fa-shop text-amber-500 mr-2"></i>Automatisation
-                </h2>
-                <div id="upgrades-list" class="space-y-2.5">
-                    <!-- Généré dynamiquement par le script JavaScript -->
-                </div>
-            </section>
+            </div>
         </main>
     </div>
 

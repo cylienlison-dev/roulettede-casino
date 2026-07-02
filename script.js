@@ -4,7 +4,8 @@ const WHEEL_NUMBERS = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 3
 // INITIALISATION DU SOLDE DE DÉPART
 const STARTING_BALANCE = 1000;
 let balance = parseInt(localStorage.getItem('roulette_canvas_balance')) || STARTING_BALANCE;
-let currentBet = 0;
+let currentBet = 0; // Représente la mise totale cumulée
+let bets = {};      // Stocke le détail des mises par numéro (ex: { 5: 10, 17: 100 })
 let isSpinning = false;
 let gameHistory = []; 
 
@@ -138,14 +139,13 @@ function checkBankruptcy() {
     }
 }
 
-// HISTORIQUE NETTOYÉ : 100% STATIQUE ET CALME
+// HISTORIQUE STATIQUE
 function renderHistory() {
     if (gameHistory.length === 0) return;
     historyContainer.innerHTML = '';
     gameHistory.forEach(num => {
         const bg = getNumberColor(num);
         const badge = document.createElement('span');
-        // Suppression de transform, scale-0 et animate-bounce pour bloquer les mouvements
         badge.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black font-mono shadow border border-white/10 text-white shrink-0";
         badge.style.backgroundColor = bg;
         badge.innerText = num;
@@ -153,16 +153,33 @@ function renderHistory() {
     });
 }
 
+// SYSTÈME DE SELECTION MULTI-NUMÉROS
 chipButtons.forEach(chip => {
     chip.onclick = () => {
         if (isSpinning) return;
+        
+        // On vérifie d'abord quel numéro est écrit dans la case cible
+        const targetNumber = parseInt(betTargetInput.value);
+        if (isNaN(targetNumber) || targetNumber < 0 || targetNumber > 36) {
+            statusDisplay.innerHTML = "⚠️ <span class='text-red-400 font-bold'>INDIQUEZ UN NUMÉRO (0-36)</span> AVANT DE MISER !";
+            return;
+        }
+
         const amount = parseInt(chip.getAttribute('data-amount'));
         
         if (balance >= amount) {
             balance -= amount;
             currentBet += amount;
+            
+            // On ajoute la mise sur le numéro sélectionné
+            if (!bets[targetNumber]) bets[targetNumber] = 0;
+            bets[targetNumber] += amount;
+            
             updateUI();
-            statusDisplay.innerText = `MISE EN PLACE : +${amount}`;
+            
+            // Génère un résumé visuel des jetons placés sur la table
+            let summary = Object.entries(bets).map(([num, amt]) => `N°${num}: ${amt}¢`).join(' | ');
+            statusDisplay.innerHTML = `✅ <span class='text-emerald-400 font-bold'>Mise acceptée !</span> Table : ${summary}`;
         } else {
             statusDisplay.innerText = "SOLDE INSUFFISANT !";
         }
@@ -173,20 +190,16 @@ clearBetButton.onclick = () => {
     if (isSpinning) return;
     balance += currentBet;
     currentBet = 0;
+    bets = {}; // Vide le tableau de toutes les mises simultanées
     updateUI();
-    statusDisplay.innerText = "MISES REPRISES.";
+    statusDisplay.innerText = "MISES REPRISES SUR LA TABLE.";
 };
 
 spinButton.onclick = () => {
     if (isSpinning) return;
 
-    const targetNumber = parseInt(betTargetInput.value);
-    if (isNaN(targetNumber) || targetNumber < 0 || targetNumber > 36) {
-        alert("Numéro invalide ! Choisissez entre 0 et 36.");
-        return;
-    }
     if (currentBet <= 0) {
-        statusDisplay.innerText = "ENGAGEZ UNE MISE AVANT DE LANCER !";
+        statusDisplay.innerText = "ENGAGEZ UNE MISE AVANT DE LANCER LA ROUE !";
         return;
     }
 
@@ -204,18 +217,21 @@ spinButton.onclick = () => {
     canvas.style.transform = `rotate(${targetDegrees}deg)`;
 
     setTimeout(() => {
-        if (targetNumber === winningNumber) {
-            const winnings = currentBet * 36; 
+        // Vérification de gain sur le tableau des mises multi-numéros
+        if (bets[winningNumber] && bets[winningNumber] > 0) {
+            const winnings = bets[winningNumber] * 36; 
             balance += winnings;
-            statusDisplay.innerText = `NUMÉRO GAGNANT : ${winningNumber} ! GAGNÉ (+${winnings})`;
+            statusDisplay.innerHTML = `🎉 NUMÉRO GAGNANT : <span class="text-green-400 font-black">${winningNumber}</span> ! GAGNÉ SUR CE NUMÉRO (+${winnings} jetons)`;
         } else {
-            statusDisplay.innerText = `NUMÉRO GAGNANT : ${winningNumber}. PERDU !`;
+            statusDisplay.innerHTML = `🎲 NUMÉRO GAGNANT : <span class="text-red-400 font-bold">${winningNumber}</span>. PAS DE MISE ICI, PERDU !`;
         }
 
         gameHistory.unshift(winningNumber);
         if (gameHistory.length > 6) gameHistory.pop();
 
+        // Réinitialisation de la table de jeu pour le prochain tour
         currentBet = 0;
+        bets = {}; 
         isSpinning = false;
 
         const finalAngleNormalized = targetDegrees % 360;
@@ -227,7 +243,8 @@ spinButton.onclick = () => {
     }, 5000);
 };
 
-// Premier rendu au chargement
+// PREMIER RENDU AU CHARGEMENT
 drawWheel();
 updateUI();
 checkBankruptcy();
+spinButton.textContent = "Lancer la roue";

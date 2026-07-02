@@ -158,7 +158,6 @@ chipButtons.forEach(chip => {
     chip.onclick = () => {
         if (isSpinning) return;
         
-        // On vérifie d'abord quel numéro est écrit dans la case cible
         const targetNumber = parseInt(betTargetInput.value);
         if (isNaN(targetNumber) || targetNumber < 0 || targetNumber > 36) {
             statusDisplay.innerHTML = "⚠️ <span class='text-red-400 font-bold'>INDIQUEZ UN NUMÉRO (0-36)</span> AVANT DE MISER !";
@@ -171,13 +170,11 @@ chipButtons.forEach(chip => {
             balance -= amount;
             currentBet += amount;
             
-            // On ajoute la mise sur le numéro sélectionné
             if (!bets[targetNumber]) bets[targetNumber] = 0;
             bets[targetNumber] += amount;
             
             updateUI();
             
-            // Génère un résumé visuel des jetons placés sur la table
             let summary = Object.entries(bets).map(([num, amt]) => `N°${num}: ${amt}¢`).join(' | ');
             statusDisplay.innerHTML = `✅ <span class='text-emerald-400 font-bold'>Mise acceptée !</span> Table : ${summary}`;
         } else {
@@ -190,7 +187,7 @@ clearBetButton.onclick = () => {
     if (isSpinning) return;
     balance += currentBet;
     currentBet = 0;
-    bets = {}; // Vide le tableau de toutes les mises simultanées
+    bets = {}; 
     updateUI();
     statusDisplay.innerText = "MISES REPRISES SUR LA TABLE.";
 };
@@ -217,19 +214,17 @@ spinButton.onclick = () => {
     canvas.style.transform = `rotate(${targetDegrees}deg)`;
 
     setTimeout(() => {
-        // Vérification de gain sur le tableau des mises multi-numéros
         if (bets[winningNumber] && bets[winningNumber] > 0) {
             const winnings = bets[winningNumber] * 36; 
             balance += winnings;
-            statusDisplay.innerHTML = `🎉 NUMÉRO GAGNANT : <span class="text-green-400 font-black">${winningNumber}</span> ! GAGNÉ SUR CE NUMÉRO (+${winnings} jetons)`;
+            statusDisplay.innerHTML = `🎉 NUMÉRO GAGNANT : <span class="text-green-400 font-black">${winningNumber}</span> ! GAGNÉ (+${winnings} jetons)`;
         } else {
-            statusDisplay.innerHTML = `🎲 NUMÉRO GAGNANT : <span class="text-red-400 font-bold">${winningNumber}</span>. PAS DE MISE ICI, PERDU !`;
+            statusDisplay.innerHTML = `🎲 NUMÉRO GAGNANT : <span class="text-red-400 font-bold">${winningNumber}</span>. PERDU !`;
         }
 
         gameHistory.unshift(winningNumber);
         if (gameHistory.length > 6) gameHistory.pop();
 
-        // Réinitialisation de la table de jeu pour le prochain tour
         currentBet = 0;
         bets = {}; 
         isSpinning = false;
@@ -242,6 +237,54 @@ spinButton.onclick = () => {
         checkBankruptcy();
     }, 5000);
 };
+
+// ==========================================
+// OPTIMISATIONS ET CORRECTIFS MOBILE (CSS INJECTÉ)
+// ==========================================
+
+// 1. Déplacement de l'historique tout en haut du jeu pour éviter de scroller
+if (canvas && historyContainer) {
+    canvas.parentNode.insertBefore(historyContainer, canvas);
+}
+
+// 2. Injection de styles pour corriger les décalages et forcer le responsive
+const mobileStyle = document.createElement('style');
+mobileStyle.textContent = `
+    /* Empêche la roue de déborder et la rend adaptative */
+    #roulette-canvas {
+        max-width: 92vw !important;
+        max-height: 92vw !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 10px auto !important;
+        display: block;
+    }
+    /* Alignement propre de la ligne de saisie et de mise totale */
+    #bet-target {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        max-width: 80px !important;
+        text-align: center;
+    }
+    /* Évite les sauts de ligne chaotiques sur petit écran */
+    .flex.items-center.gap-4, .flex.gap-2 {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+    /* Amélioration de l'espacement de l'historique en haut */
+    #history-container {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        margin: 15px auto !important;
+        width: 100% !important;
+    }
+    /* Supprime le délai de clic sur smartphone */
+    button, .chip-btn {
+        touch-action: manipulation;
+    }
+`;
+document.head.appendChild(mobileStyle);
 
 // PREMIER RENDU AU CHARGEMENT
 drawWheel();
